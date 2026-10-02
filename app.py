@@ -33,10 +33,22 @@ def get_produto_by_id(id):
 # TODO 2: Implementar uma rota POST para cadastrar um novo produto
 @app.route('/produtos', methods=['POST'])
 def add_produto():
-    # Recupere os dados enviados no corpo da requisição usando request.get_json()
-    # Adicione o novo produto à lista 'produtos'
-    # Retorne o produto criado e o status code 201
-    pass
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    dados = request.get_json()
+    
+    # Validação simples
+    if not dados or "nome" not in dados or "preco" not in dados:
+        return jsonify({"erro": "Dados inválidos. É necessário informar 'nome' e 'preco'"}), 400
+    
+    # Gera um novo ID automático
+    novo_id = produtos[-1]["id"] + 1 if produtos else 1
+    
+    novo_produto = {
+        "id": novo_id,
+        "nome": dados["nome"],
+        "preco": float(dados["preco"])
+    }
+    
+    produtos.append(novo_produto)
+    
+    # Retorna o produto recém-criado e o status 201 (Created)
+    return jsonify(novo_produto), 201
